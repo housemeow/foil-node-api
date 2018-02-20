@@ -1,8 +1,7 @@
 const express = require('express');
 const app = express();
-import config from './config.js';
 var pgp = require('pg-promise')(/*options*/);
-var db = pgp(`postgres://${config.DB_USER_NAME}:${config.DB_PASSWORD}@${config.DB_HOST}:${config.DB_PORT}/${config.DB_DATABASE}`);
+var db = pgp(`postgres://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`);
 
 (async function() {
   let languages = await db.one('SELECT * FROM Language');
