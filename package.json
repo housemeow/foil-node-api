@@ -8,6 +8,7 @@
     "build": "babel src -d dist"
   },
   "dependencies": {
+    "await-to-js": "^2.0.1",
     "express": "^4.16.2",
     "pg-promise": "^7.5.4"
   },

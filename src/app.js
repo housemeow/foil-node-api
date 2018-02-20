@@ -1,11 +1,17 @@
-const express = require('express');
+import to from 'await-to-js'
+import express from 'express';
 const app = express();
 var pgp = require('pg-promise')(/*options*/);
 var db = pgp(`postgres://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`);
 
+
 (async function() {
-  let languages = await db.one('SELECT * FROM Language');
-  console.log('async languages', languages);
+  let err, languages;
+  [ err, languages ] = await to(db.one('SELECT * FROM Language'));
+  if(languages)
+    console.log('async languages', languages);
+  else
+    console.log('async ERROR', err)
 })()
 
 db.one('SELECT * FROM Language').then(function(data) {
