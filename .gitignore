@@ -30,7 +30,7 @@ node_modules
 npm-debug.log
 
 # Configuration files
-src/config.js
+config/default.json
 
 # Babel build
 dist/
