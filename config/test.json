@@ -1,0 +1,9 @@
+{
+  "db": {
+    "user": "foil_test",
+    "password": "1qaz2wsx",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "foil_test"
+  }
+}
