@@ -22,6 +22,15 @@ app.post('/languages', async(req, res) => {
   } else {
     res.send(err);
   }
-})
+});
+
+app.get('/languages/:languageId', async(req, res) => {
+  const [err, language] = await to(db.one('SELECT * FROM language WHERE language_id=$1', req.params.languageId));
+  if(language) {
+    res.send(language);
+  } else {
+    res.send(err);
+  }
+});
 
 module.exports = app

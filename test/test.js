@@ -7,37 +7,32 @@ let chaiHttp = require('chai-http');
 let should = chai.should();
 chai.use(chaiHttp);
 
-describe('migration', () => {
-  it('應該要能夠對測試資料庫做migration', function(done) {
-    this.timeout(10000);
-    doMigrate().then(done);
-  });
-});
-
 describe('/GET languages', function() {
-  beforeEach(done => {
-    chai
+  before(done=> {
+    doMigrate().then(()=> {
+      chai
+        .request(server)
+        .post('/languages').send({
+          abbreviation: 'en',
+          description: '英文'
+        })
+        .end(()=>{});
+      chai
+        .request(server)
+        .post('/languages').send({
+          abbreviation: 'tw',
+          description: '繁中'
+        })
+        .end(()=>{});
+      chai
       .request(server)
       .post('/languages').send({
-        abbreviation: 'en',
-        description: '英文'
+        abbreviation: 'jp',
+        description: '日文'
       })
-      .end(()=>{});
-    chai
-      .request(server)
-      .post('/languages').send({
-        abbreviation: 'tw',
-        description: '繁中'
-      })
-      .end(()=>{});
-    chai
-    .request(server)
-    .post('/languages').send({
-      abbreviation: 'jp',
-      description: '日文'
-    })
-    .end(done);
-  })
+      .end(done);
+    });
+  });
   it('應該能取得所有的languages', function(done) {
     chai
       .request(server)
@@ -49,6 +44,73 @@ describe('/GET languages', function() {
         done();
       });
   });
+});
+
+describe('/POST languages', function() {
+  before(done=> {
+    doMigrate().then(()=> {
+      chai
+      .request(server)
+      .post('/languages').send({
+        abbreviation: 'en',
+        description: '英文'
+      })
+      .end(()=>{});
+      chai
+        .request(server)
+        .post('/languages').send({
+          abbreviation: 'tw',
+          description: '繁中'
+        })
+        .end(()=>{});
+      chai
+      .request(server)
+      .post('/languages').send({
+        abbreviation: 'jp',
+        description: '日文'
+      })
+      .end(done);
+    });
+  });
+  it('應該能拿到正確的language', function(done) {
+    chai
+      .request(server)
+      .get('/languages/1')
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.language_id.should.be.eql(1);
+        res.body.abbreviation.should.be.eql('en');
+        res.body.description.should.be.eql('英文');
+        done();
+      });
+  })
+  it('應該能拿到正確的language', function(done) {
+    chai
+      .request(server)
+      .get('/languages/2')
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.language_id.should.be.eql(2);
+        res.body.abbreviation.should.be.eql('tw');
+        res.body.description.should.be.eql('繁中');
+        done();
+      });
+  })
+  it('應該能拿到正確的language', function(done) {
+    chai
+      .request(server)
+      .get('/languages/3')
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.language_id.should.be.eql(3);
+        res.body.abbreviation.should.be.eql('jp');
+        res.body.description.should.be.eql('日文');
+        done();
+      });
+  })
 });
 
 var assert = require('assert');
