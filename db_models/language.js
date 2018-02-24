@@ -20,7 +20,7 @@ async function updateLanguage(language_id, payload) {
       abbreviation=${abbreviation},\
       description=${description}\
     WHERE language_id=${language_id}", { ...payload, language_id }));
-  return await getLanguage(langauge_id);
+  return await getLanguage(language_id);
 }
 
 export default {

@@ -17,7 +17,6 @@ app.get('/languages', async(req, res) => {
 
 app.post('/languages', async(req, res) => {
   const [err, language] = await Language.addLanguage(req.body);
-  console.log('language', language);
   if(language) {
     res.send(language);
   } else {
@@ -35,9 +34,8 @@ app.get('/languages/:language_id', async(req, res) => {
 });
 
 app.put('/languages/:language_id', async(req, res) => {
-  const [err, language] = await Language.updateLanguage(res.params.Language_id, res.body);
+  const [err, language] = await Language.updateLanguage(req.params.language_id, req.body);
   if(language) {
-    console.log('language', language);
     res.send(language);
   } else {
     res.send(err);
