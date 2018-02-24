@@ -1,7 +1,7 @@
 exports.up = (pgm) => {
   pgm.createTable('language', {
     language_id: {
-      type: 'serial8',
+      type: 'serial4',
       primaryKey: true,
       notNull: true
     },
