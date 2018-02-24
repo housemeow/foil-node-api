@@ -23,9 +23,14 @@ async function update(language_id, payload) {
   return await get(language_id);
 }
 
+async function deleteAll() {
+  return await db.query('DELETE FROM language WHERE true');
+}
+
 export default {
   list,
   add,
   get,
-  update
+  update,
+  deleteAll
 }

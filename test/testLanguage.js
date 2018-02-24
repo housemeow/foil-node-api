@@ -1,6 +1,7 @@
 import 'babel-polyfill'; // 解決ES6, 7的問題
 import server from '../bin/test.js';
 import doMigrate from './migration';
+import Language from '../src/db_models/language';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
@@ -136,6 +137,34 @@ describe('/PUT languages', function() {
         res.body.should.be.a('object');
         res.body.abbreviation.should.be.eql('tw');
         res.body.description.should.be.eql('繁中');
+        done();
+      })
+  })
+})
+
+describe('language db model', function() {
+  before(done=> {
+    doMigrate().then(()=> {
+      chai
+      .request(server)
+      .post('/languages').send({
+        abbreviation: 'en',
+        description: '英文'
+      })
+      .end(done);
+    })
+  })
+
+  beforeEach(async()=> {
+    await Language.deleteAll();
+  })
+
+  it('應該要能刪除所有語言', function(done) {
+    chai
+      .request(server)
+      .get('/languages')
+      .end((err, res) => {
+        res.body.length.should.be.eql(0);
         done();
       })
   })
