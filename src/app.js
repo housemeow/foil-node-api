@@ -14,4 +14,14 @@ app.get('/languages', async(req, res) => {
   res.send(await db.any('SELECT * FROM language'));
 });
 
+app.post('/languages', async(req, res) => {
+  const [err, language] = await to(db.one('INSERT INTO language(abbreviation, description) VALUES(${abbreviation}, ${description}) RETURNING language_id', req.body));
+  console.log('language', language);
+  if(language) {
+    res.send(language);
+  } else {
+    res.send(err);
+  }
+})
+
 module.exports = app
