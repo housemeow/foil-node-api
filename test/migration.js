@@ -2,7 +2,7 @@ import runner from "node-pg-migrate";
 require('dotenv').config({ path: '.env.test' });
 
 const DB_URL = `postgres://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`;
-const db = require('../db_models/db.js')(DB_URL);
+const db = require('../src/db_models/db.js')(DB_URL);
 
 function doMigrate() {
   return db.query('DROP SCHEMA public CASCADE').then(data=> {
