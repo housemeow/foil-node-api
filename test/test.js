@@ -113,11 +113,30 @@ describe('/POST languages', function() {
   })
 });
 
-var assert = require('assert');
-describe('Array', () => {
-  describe('#indexOf()', () => {
-    it('should return -1 when the value is not present', function() {
-      assert.equal([1, 2, 3].indexOf(4), -1);
-    });
-  });
-});
+// describe('/PUT languages', function() {
+//   before(done=> {
+//     doMigrate().then(()=> {
+//       chai
+//       .request(server)
+//       .post('/languages').send({
+//         abbreviation: 'en',
+//         description: '英文'
+//       })
+//       .end(done);
+//     })
+//   })
+
+//   it('應該要能更新語言資訊', function(done) {
+//     chai
+//       .request(server)
+//       .put('/languages/1')
+//       .send({abbreviation: 'tw', description: '繁中'})
+//       .end((err, res) => {
+//         res.should.have.status(200);
+//         res.body.should.be.a('object');
+//         res.body.abbreviation.should.be.eql('tw');
+//         res.body.description.should.be.eql('繁中');
+//         done();
+//       })
+//   })
+// })
