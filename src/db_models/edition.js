@@ -25,7 +25,12 @@ async function add(payload) {
     'INSERT INTO edition(edition_base_id, language_id, name) VALUES(${edition_base_id}, ${language_id}, ${name}) RETURNING edition', payload));
 }
 
+async function get(edition_id) {
+  return await to(db.one('SELECT e.edition_id, e.name, eb.edition_base_id, eb.abbreviation, eb.icon FROM edition as e, edition_base as eb WHERE edition_id=$1 AND e.edition_base_id = eb.edition_base_id', edition_id));
+}
+
 export default {
   list,
-  add
+  add,
+  get
 }

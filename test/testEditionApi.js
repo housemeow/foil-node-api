@@ -39,3 +39,28 @@ describe('/GET editions', () => {
     res.body.length.should.be.eql(5);
   });
 });
+
+describe('POST /editions', () => {
+  before(async() => {
+    await doMigrate();
+    await createLanguage();
+  });
+
+  it('應該要能建立版本', async() => {
+    await to(chai
+      .request(app)
+      .post('/editions')
+      .send({
+        language_id: 1,
+        abbreviation: 'ed1',
+        name: 'EN_ED1'
+      }));
+
+    const [err, edition] = await Edition.get(1);
+    console.log('err, edition', err, edition);
+    edition.edition_id.should.be.eql(1);
+    edition.edition_base_id.should.be.eql(1);
+    edition.abbreviation.should.be.eql('ed1');
+    edition.name.should.be.eql('EN_ED1');
+  });
+});
