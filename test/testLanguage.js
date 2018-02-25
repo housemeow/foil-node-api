@@ -1,4 +1,3 @@
-import 'babel-polyfill'; // 解決ES6, 7的問題
 import server from '../bin/test.js';
 import doMigrate from './migration';
 import Language from '../src/db_models/language';
@@ -9,28 +8,17 @@ let should = chai.should();
 chai.use(chaiHttp);
 
 async function createFixture() {
-  return new Promise(resolve => {
-    chai
-      .request(server)
-      .post('/languages').send({
-        abbreviation: 'en',
-        description: '英文'
-      })
-      .end(()=>{});
-    chai
-      .request(server)
-      .post('/languages').send({
-        abbreviation: 'tw',
-        description: '繁中'
-      })
-      .end(()=>{});
-    chai
-    .request(server)
-    .post('/languages').send({
-      abbreviation: 'jp',
-      description: '日文'
-    })
-    .end(resolve);
+  await Language.add({
+    abbreviation: 'en',
+    description: '英文'
+  });
+  await Language.add({
+    abbreviation: 'tw',
+    description: '繁中'
+  });
+  await Language.add({
+    abbreviation: 'jp',
+    description: '日文'
   });
 }
 
@@ -101,14 +89,9 @@ describe('/POST languages', () => {
 describe('/PUT languages', () => {
   before(async ()=> {
     await doMigrate();
-    await new Promise(resolve=> {
-      chai
-      .request(server)
-      .post('/languages').send({
-        abbreviation: 'en',
-        description: '英文'
-      })
-      .end(resolve);
+    await Language.add({
+      abbreviation: 'en',
+      description: '英文'
     });
   })
 
@@ -129,16 +112,11 @@ describe('/PUT languages', () => {
 
 describe('language db model', () => {
   before(async ()=> {
-    await doMigrate()
-    await new Promise(resolve=> {
-      chai
-      .request(server)
-      .post('/languages').send({
-        abbreviation: 'en',
-        description: '英文'
-      })
-      .end(resolve);
-    })
+    await doMigrate();
+    await Language.add({
+      abbreviation: 'en',
+      description: '英文'
+    });
   })
 
   beforeEach(async()=> {
