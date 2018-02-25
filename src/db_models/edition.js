@@ -22,7 +22,7 @@ async function add(payload) {
     }
   }
   return await to(db.one(
-    'INSERT INTO edition(edition_base_id, language_id, name) VALUES(${edition_base_id}, ${language_id}, ${name}) RETURNING edition', payload));
+    'INSERT INTO edition(edition_base_id, language_id, name) VALUES(${edition_base_id}, ${language_id}, ${name}) RETURNING edition_id, edition_base_id', payload));
 }
 
 async function get(edition_id) {
