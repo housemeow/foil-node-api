@@ -18,10 +18,11 @@ router.post('', async(req, res) => {
 
 router.get('/:language_id', async(req, res) => {
   const [err, language] = await Language.get(req.params.language_id);
+  console.log('err, language', err, language);
   if(language) {
     res.send(language);
   } else {
-    res.send(err);
+    res.status(403).send(err);
   }
 });
 
