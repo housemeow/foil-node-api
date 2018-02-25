@@ -1,11 +1,12 @@
 const pgp = require('pg-promise')(/*initialization options*/);
-const cache = new Map();
 
-module.exports = function(db_url) {
-	if (cache.has(db_url)) {
-		return cache.get(db_url);
-	}
-	const instance = pgp(db_url);
-	cache.set(db_url, instance);
-	return instance;
+const DB_URL = `postgres://\
+${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@\
+${process.env.DB_HOST}:${process.env.DB_PORT}/\
+${process.env.DB_DATABASE}`;
+const db = pgp(DB_URL);
+
+module.exports = {
+  db,
+  DB_URL
 };

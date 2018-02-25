@@ -1,5 +1,5 @@
 import to from 'await-to-js'
-const db = require('./db.js')(`postgres://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`);
+const { db } = require('./db.js');
 
 async function list() {
   return await to(db.any('SELECT * FROM language'));
