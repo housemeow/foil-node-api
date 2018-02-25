@@ -132,6 +132,19 @@ describe('/POST languages', () => {
     languageJp.abbreviation.should.be.eql('jp');
     languageJp.description.should.be.eql('日文');
   });
+
+  it('language的abbreviation, description不能重複', async() => {
+    const [abbreviationErrRes, ] = await to(chai
+      .request(server)
+      .post('/languages')
+      .send({
+        abbreviation: 'tw',
+        description: '繁中'
+      }));
+      console.log(abbreviationErrRes);
+    abbreviationErrRes.should.have.status(403);
+    abbreviationErrRes.response.text.should.be.eql('Key (abbreviation)=(tw) already exists.');
+  });
 });
 
 describe('/PUT languages', () => {
