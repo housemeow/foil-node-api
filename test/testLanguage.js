@@ -8,7 +8,7 @@ let chaiHttp = require('chai-http');
 let should = chai.should();
 chai.use(chaiHttp);
 
-describe('/GET languages', function() {
+describe('/GET languages', () => {
   before(done=> {
     doMigrate().then(()=> {
       chai
@@ -34,7 +34,7 @@ describe('/GET languages', function() {
       .end(done);
     });
   });
-  it('應該能取得所有的languages', function(done) {
+  it('應該能取得所有的languages', done => {
     chai
       .request(server)
       .get('/languages')
@@ -47,7 +47,7 @@ describe('/GET languages', function() {
   });
 });
 
-describe('/POST languages', function() {
+describe('/POST languages', () => {
   before(done=> {
     doMigrate().then(()=> {
       chai
@@ -73,7 +73,7 @@ describe('/POST languages', function() {
       .end(done);
     });
   });
-  it('應該能拿到正確的language', function(done) {
+  it('應該能拿到正確的language', done => {
     chai
       .request(server)
       .get('/languages/1')
@@ -86,7 +86,7 @@ describe('/POST languages', function() {
         done();
       });
   })
-  it('應該能拿到正確的language', function(done) {
+  it('應該能拿到正確的language', done => {
     chai
       .request(server)
       .get('/languages/2')
@@ -99,7 +99,7 @@ describe('/POST languages', function() {
         done();
       });
   })
-  it('應該能拿到正確的language', function(done) {
+  it('應該能拿到正確的language', done => {
     chai
       .request(server)
       .get('/languages/3')
@@ -114,7 +114,7 @@ describe('/POST languages', function() {
   })
 });
 
-describe('/PUT languages', function() {
+describe('/PUT languages', () => {
   before(done=> {
     doMigrate().then(()=> {
       chai
@@ -127,7 +127,7 @@ describe('/PUT languages', function() {
     })
   })
 
-  it('應該要能更新語言資訊', function(done) {
+  it('應該要能更新語言資訊', done => {
     chai
       .request(server)
       .put('/languages/1')
@@ -142,7 +142,7 @@ describe('/PUT languages', function() {
   })
 })
 
-describe('language db model', function() {
+describe('language db model', () => {
   before(done=> {
     doMigrate().then(()=> {
       chai
@@ -159,7 +159,7 @@ describe('language db model', function() {
     await Language.deleteAll();
   })
 
-  it('應該要能刪除所有語言', function(done) {
+  it('應該要能刪除所有語言', done => {
     chai
       .request(server)
       .get('/languages')
