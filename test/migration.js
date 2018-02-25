@@ -1,6 +1,4 @@
 import runner from "node-pg-migrate";
-require('dotenv').config({ path: '.env.test' });
-
 const { db, DB_URL } = require('../src/db_models/db.js');
 
 function doMigrate() {

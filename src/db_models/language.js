@@ -1,5 +1,5 @@
 import to from 'await-to-js'
-const { db } = require('./db.js');
+import { db } from './db.js';
 
 async function list() {
   return await to(db.any('SELECT * FROM language'));

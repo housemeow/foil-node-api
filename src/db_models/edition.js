@@ -1,7 +1,7 @@
 import to from 'await-to-js'
 import EditionBase from './edition_base';
 import { UNIQUE_VIOLATION } from 'pg-error-constants';
-const { db } = require('./db.js');
+import { db } from './db.js';
 
 async function list() {
   return await to(db.any('SELECT * FROM edition'));

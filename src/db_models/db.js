@@ -6,7 +6,4 @@ ${process.env.DB_HOST}:${process.env.DB_PORT}/\
 ${process.env.DB_DATABASE}`;
 const db = pgp(DB_URL);
 
-module.exports = {
-  db,
-  DB_URL
-};
+export { db, DB_URL };

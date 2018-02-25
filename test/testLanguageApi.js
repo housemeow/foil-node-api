@@ -1,36 +1,22 @@
+import app from '../src/app.js';
 import to from 'await-to-js';
-import server from '../bin/test.js';
 import doMigrate from './migration';
 import { Language } from '../src/db_models';
+import { createLanguage } from './fixture';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let should = chai.should();
 chai.use(chaiHttp);
 
-async function createFixture() {
-  await Language.add({
-    abbreviation: 'en',
-    description: '英文'
-  });
-  await Language.add({
-    abbreviation: 'tw',
-    description: '繁中'
-  });
-  await Language.add({
-    abbreviation: 'jp',
-    description: '日文'
-  });
-}
-
 describe('/GET languages', () => {
   before(async () => {
     await doMigrate()
-    await createFixture();
+    await createLanguage();
   });
   it('應該能取得所有的languages', done => {
     chai
-      .request(server)
+      .request(app)
       .get('/languages')
       .end((err, res) => {
         res.should.have.status(200);
@@ -44,12 +30,12 @@ describe('/GET languages', () => {
 describe('/GET languages/?', () => {
   before(async () => {
     await doMigrate()
-    await createFixture();
+    await createLanguage();
   });
 
   it('應該能利用language_id取得對應的language', async() => {
     const language1Res = await chai
-      .request(server)
+      .request(app)
       .get('/languages/1');
 
     language1Res.should.have.status(200);
@@ -59,7 +45,7 @@ describe('/GET languages/?', () => {
     language1Res.body.description.should.be.eql('英文');
 
     const language2Res = await chai
-      .request(server)
+      .request(app)
       .get('/languages/2');
 
     language2Res.should.have.status(200);
@@ -69,7 +55,7 @@ describe('/GET languages/?', () => {
     language2Res.body.description.should.be.eql('繁中');
 
     const language3Res = await chai
-      .request(server)
+      .request(app)
       .get('/languages/3');
 
     language3Res.should.have.status(200);
@@ -81,7 +67,7 @@ describe('/GET languages/?', () => {
 
   it('抓不存在的語言會錯誤', async () => {
     const [err, languageNotExistRes] = await to(chai
-      .request(server)
+      .request(app)
       .get('/languages/5'));
     err.should.have.status(403);
   });
@@ -93,21 +79,21 @@ describe('/POST languages', () => {
   });
   it('應該能拿到正確的language', async () => {
     await chai
-      .request(server)
+      .request(app)
       .post('/languages')
       .send({
         abbreviation: 'en',
         description: '英文'
       });
     await chai
-      .request(server)
+      .request(app)
       .post('/languages')
       .send({
         abbreviation: 'tw',
         description: '繁中'
       });
     await chai
-      .request(server)
+      .request(app)
       .post('/languages')
       .send({
         abbreviation: 'jp',
@@ -134,7 +120,7 @@ describe('/POST languages', () => {
 
   it('language的abbreviation, description不能重複', async() => {
     const [abbreviationErr, ] = await to(chai
-      .request(server)
+      .request(app)
       .post('/languages')
       .send({
         abbreviation: 'tw',
@@ -160,7 +146,7 @@ describe('/PUT languages', () => {
 
   it('應該要能更新語言資訊', done => {
     chai
-      .request(server)
+      .request(app)
       .put('/languages/1')
       .send({abbreviation: 'jp', description: '日文'})
       .end((err, res) => {
@@ -174,7 +160,7 @@ describe('/PUT languages', () => {
 
   it('abbreviation不能重複', async () => {
     const [err] = await to(chai
-      .request(server)
+      .request(app)
       .put('/languages/1')
       .send({abbreviation: 'tw', description: '繁中'}));
 
@@ -198,7 +184,7 @@ describe('language db model', () => {
 
   it('應該要能刪除所有語言', done => {
     chai
-      .request(server)
+      .request(app)
       .get('/languages')
       .end((err, res) => {
         res.body.length.should.be.eql(0);
