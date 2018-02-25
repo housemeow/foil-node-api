@@ -48,6 +48,6 @@ exports.up = (pgm) => {
 };
 
 exports.down = (pgm) => {
-  pgm.dropTable('edition_base');
   pgm.dropTable('edition');
+  pgm.dropTable('edition_base');
 };
