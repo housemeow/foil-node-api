@@ -1,7 +1,7 @@
 import to from 'await-to-js';
 import server from '../bin/test.js';
 import doMigrate from './migration';
-import { Language, Edition } from '../src/db_models';
+import { Language } from '../src/db_models';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
@@ -83,7 +83,6 @@ describe('/GET languages/?', () => {
     const [err, languageNotExistRes] = await to(chai
       .request(server)
       .get('/languages/5'));
-    console.log('langaugeNOtExist', languageNotExistRes);
     err.should.have.status(403);
   });
 });
@@ -141,7 +140,6 @@ describe('/POST languages', () => {
         abbreviation: 'tw',
         description: '繁中'
       }));
-      console.log(abbreviationErr);
     abbreviationErr.should.have.status(403);
     abbreviationErr.response.text.should.be.eql('Key (abbreviation)=(tw) already exists.');
   });
