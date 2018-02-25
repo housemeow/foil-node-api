@@ -8,31 +8,36 @@ let chaiHttp = require('chai-http');
 let should = chai.should();
 chai.use(chaiHttp);
 
-describe('/GET languages', () => {
-  before(done=> {
-    doMigrate().then(()=> {
-      chai
-        .request(server)
-        .post('/languages').send({
-          abbreviation: 'en',
-          description: '英文'
-        })
-        .end(()=>{});
-      chai
-        .request(server)
-        .post('/languages').send({
-          abbreviation: 'tw',
-          description: '繁中'
-        })
-        .end(()=>{});
-      chai
+async function createFixture() {
+  return new Promise(resolve => {
+    chai
       .request(server)
       .post('/languages').send({
-        abbreviation: 'jp',
-        description: '日文'
+        abbreviation: 'en',
+        description: '英文'
       })
-      .end(done);
-    });
+      .end(()=>{});
+    chai
+      .request(server)
+      .post('/languages').send({
+        abbreviation: 'tw',
+        description: '繁中'
+      })
+      .end(()=>{});
+    chai
+    .request(server)
+    .post('/languages').send({
+      abbreviation: 'jp',
+      description: '日文'
+    })
+    .end(resolve);
+  });
+}
+
+describe('/GET languages', () => {
+  before(async () => {
+    await doMigrate()
+    await createFixture();
   });
   it('應該能取得所有的languages', done => {
     chai
@@ -48,30 +53,9 @@ describe('/GET languages', () => {
 });
 
 describe('/POST languages', () => {
-  before(done=> {
-    doMigrate().then(()=> {
-      chai
-      .request(server)
-      .post('/languages').send({
-        abbreviation: 'en',
-        description: '英文'
-      })
-      .end(()=>{});
-      chai
-        .request(server)
-        .post('/languages').send({
-          abbreviation: 'tw',
-          description: '繁中'
-        })
-        .end(()=>{});
-      chai
-      .request(server)
-      .post('/languages').send({
-        abbreviation: 'jp',
-        description: '日文'
-      })
-      .end(done);
-    });
+  before(async ()=> {
+    await doMigrate();
+    await createFixture();
   });
   it('應該能拿到正確的language', done => {
     chai
@@ -115,16 +99,17 @@ describe('/POST languages', () => {
 });
 
 describe('/PUT languages', () => {
-  before(done=> {
-    doMigrate().then(()=> {
+  before(async ()=> {
+    await doMigrate();
+    await new Promise(resolve=> {
       chai
       .request(server)
       .post('/languages').send({
         abbreviation: 'en',
         description: '英文'
       })
-      .end(done);
-    })
+      .end(resolve);
+    });
   })
 
   it('應該要能更新語言資訊', done => {
@@ -143,15 +128,16 @@ describe('/PUT languages', () => {
 })
 
 describe('language db model', () => {
-  before(done=> {
-    doMigrate().then(()=> {
+  before(async ()=> {
+    await doMigrate()
+    await new Promise(resolve=> {
       chai
       .request(server)
       .post('/languages').send({
         abbreviation: 'en',
         description: '英文'
       })
-      .end(done);
+      .end(resolve);
     })
   })
 
