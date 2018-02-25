@@ -1,5 +1,5 @@
 import runner from "node-pg-migrate";
-const { db, DB_URL } = require('../src/db_models/db.js');
+import { db, DB_URL } from '../src/db_models/db.js';
 
 function doMigrate() {
   return db.query('DROP SCHEMA public CASCADE').then(data=> {

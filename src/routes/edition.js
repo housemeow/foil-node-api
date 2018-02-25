@@ -7,4 +7,4 @@ router.get('', async (req, res)=> {
   res.send(editions);
 });
 
-module.exports = router;
+export default router;

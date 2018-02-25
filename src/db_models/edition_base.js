@@ -1,5 +1,5 @@
 import to from 'await-to-js';
-const { db } = require('./db.js');
+import { db } from './db.js';
 
 async function get(edition_base_id) {
   return await to(db.one(

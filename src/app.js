@@ -1,8 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import languageRouter from './routes/language';
-import editionRouter from './routes/edition';
+import { languageRouter, editionRouter } from './routes';
 
 const app = express();
 app.use(cors());
