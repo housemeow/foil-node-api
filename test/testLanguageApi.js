@@ -134,16 +134,16 @@ describe('/POST languages', () => {
   });
 
   it('language的abbreviation, description不能重複', async() => {
-    const [abbreviationErrRes, ] = await to(chai
+    const [abbreviationErr, ] = await to(chai
       .request(server)
       .post('/languages')
       .send({
         abbreviation: 'tw',
         description: '繁中'
       }));
-      console.log(abbreviationErrRes);
-    abbreviationErrRes.should.have.status(403);
-    abbreviationErrRes.response.text.should.be.eql('Key (abbreviation)=(tw) already exists.');
+      console.log(abbreviationErr);
+    abbreviationErr.should.have.status(403);
+    abbreviationErr.response.text.should.be.eql('Key (abbreviation)=(tw) already exists.');
   });
 });
 
@@ -154,21 +154,35 @@ describe('/PUT languages', () => {
       abbreviation: 'en',
       description: '英文'
     });
+    await Language.add({
+      abbreviation: 'tw',
+      description: '繁中'
+    });
   })
 
   it('應該要能更新語言資訊', done => {
     chai
       .request(server)
       .put('/languages/1')
-      .send({abbreviation: 'tw', description: '繁中'})
+      .send({abbreviation: 'jp', description: '日文'})
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
-        res.body.abbreviation.should.be.eql('tw');
-        res.body.description.should.be.eql('繁中');
+        res.body.abbreviation.should.be.eql('jp');
+        res.body.description.should.be.eql('日文');
         done();
       })
-  })
+  });
+
+  it('abbreviation不能重複', async () => {
+    const [err] = await to(chai
+      .request(server)
+      .put('/languages/1')
+      .send({abbreviation: 'tw', description: '繁中'}));
+
+    err.should.have.status(403);
+    err.response.text.should.be.eql('Key (abbreviation)=(tw) already exists.');
+  });
 })
 
 describe('language db model', () => {

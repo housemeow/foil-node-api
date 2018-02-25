@@ -30,7 +30,7 @@ router.put('/:language_id', async(req, res) => {
   if(language) {
     res.send(language);
   } else {
-    res.send(err);
+    res.status(403).send(err.detail);
   }
 });
 

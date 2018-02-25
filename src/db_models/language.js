@@ -14,12 +14,15 @@ async function get(language_id) {
 }
 
 async function update(language_id, payload) {
-  const [updateErr] = await to(db.query(
+  const [err] = await to(db.query(
     "\
     UPDATE language SET\
       abbreviation=${abbreviation},\
       description=${description}\
     WHERE language_id=${language_id}", { ...payload, language_id }));
+  if(err) {
+    return [err]
+  }
   return await get(language_id);
 }
 
