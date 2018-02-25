@@ -1,6 +1,6 @@
 import server from '../bin/test.js';
 import doMigrate from './migration';
-import Language from '../src/db_models/language';
+import { Language, Edition } from '../src/db_models';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
