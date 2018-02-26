@@ -4,7 +4,13 @@ import { UNIQUE_VIOLATION } from 'pg-error-constants';
 import { db } from './db.js';
 
 async function list() {
-  return await to(db.any('SELECT * FROM edition'));
+  return await to(db.any('SELECT \
+e.edition_id,\
+eb.edition_base_id,\
+eb.abbreviation,\
+eb.icon,\
+e.language_id,\
+e.name FROM edition as e, edition_base as eb WHERE e.edition_base_id = eb.edition_base_id'));
 }
 
 async function add(payload) {

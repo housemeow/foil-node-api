@@ -38,6 +38,25 @@ describe('/GET editions', () => {
     res.body.should.be.a('array');
     res.body.length.should.be.eql(5);
   });
+
+  it('edition應該要有edition_id, edition_base_id, abbreviation, icon, language_id, name', async() => {
+    await createLanguage();
+    await createEdition();
+    const [err, res] = await to(chai
+      .request(app)
+      .get('/editions'));
+
+    res.should.have.status(200);
+    res.body.should.be.a('array');
+    res.body.length.should.be.eql(5);
+
+    res.body[0].should.be.a('object');
+    res.body[0].edition_id.should.be.eql(1);
+    res.body[0].edition_base_id.should.be.eql(1);
+    res.body[0].abbreviation.should.be.eql('ed1');
+    res.body[0].language_id.should.be.eql(1);
+    res.body[0].name.should.be.eql('enEdition1');
+  });
 });
 
 describe('POST /editions', () => {
