@@ -129,7 +129,7 @@ describe('GET /editions/?', () => {
 });
 
 describe('PUT /editions/?', ()=> {
-  before(async () => {
+  beforeEach(async () => {
     await doMigrate();
     await createLanguage();
     await createEdition();
@@ -168,4 +168,22 @@ describe('PUT /editions/?', ()=> {
     jpEdition1.abbreviation.should.be.eql('new abbreviation');
     jpEdition1.name.should.be.eql('jpEdition1');
   });
+
+  it('edition_base縮寫不能重複', async() => {
+    const [err, res] = await to(chai
+      .request(app)
+      .put('/editions/1')
+      .send({
+        edition_base_id: 1,
+        abbreviation: 'ed2'
+      }));
+    err.should.have.status(403);
+    err.response.text.should.be.eql('Key (abbreviation)=(ed2) already exists.')
+
+    const [, edition] = await Edition.get(1);
+    edition.edition_id.should.be.eql(1);
+    edition.edition_base_id.should.be.eql(1);
+    edition.abbreviation.should.be.eql('ed1');
+    edition.name.should.be.eql('enEdition1');
+  })
 })
