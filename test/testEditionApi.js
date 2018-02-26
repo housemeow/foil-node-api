@@ -127,3 +127,45 @@ describe('GET /editions/?', () => {
     err.should.have.status(403);
   });
 });
+
+describe('PUT /editions/?', ()=> {
+  before(async () => {
+    await doMigrate();
+    await createLanguage();
+    await createEdition();
+  });
+
+  it('應該要能夠修改edition的資訊', async () => {
+    const [err, res] = await to(chai
+      .request(app)
+      .put('/editions/1')
+      .send({
+        edition_base_id: 1,
+        abbreviation: 'new abbreviation',
+        name: 'new name'
+      }));
+    res.should.have.status(200);
+    res.body.edition_id.should.be.eql(1);
+    res.body.edition_base_id.should.be.eql(1);
+    res.body.abbreviation.should.be.eql('new abbreviation');
+    res.body.name.should.be.eql('new name');
+
+    const [, enEdition1] = await Edition.get(1);
+    enEdition1.edition_id.should.be.eql(1);
+    enEdition1.edition_base_id.should.be.eql(1);
+    enEdition1.abbreviation.should.be.eql('new abbreviation');
+    enEdition1.name.should.be.eql('new name');
+
+    const [, twEdition1] = await Edition.get(2);
+    twEdition1.edition_id.should.be.eql(2);
+    twEdition1.edition_base_id.should.be.eql(1);
+    twEdition1.abbreviation.should.be.eql('new abbreviation');
+    twEdition1.name.should.be.eql('twEdition1');
+
+    const [, jpEdition1] = await Edition.get(3);
+    jpEdition1.edition_id.should.be.eql(3);
+    jpEdition1.edition_base_id.should.be.eql(1);
+    jpEdition1.abbreviation.should.be.eql('new abbreviation');
+    jpEdition1.name.should.be.eql('jpEdition1');
+  });
+})

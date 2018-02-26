@@ -25,4 +25,14 @@ router.get('/:edition_id', async (req, res) => {
   }
 });
 
+router.put('/:edition_id', async (req, res) => {
+  const [err, edition] = await Edition.update(req.params.edition_id, req.body);
+  console.log('err, edition', err, edition);
+  if(edition) {
+    res.send(edition)
+  } else {
+    res.status(403).send(err.detail);
+  }
+});
+
 export default router;
