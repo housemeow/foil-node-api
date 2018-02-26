@@ -140,7 +140,9 @@ describe('PUT /editions/?', ()=> {
       .request(app)
       .put('/editions/1')
       .send({
+        edition_id: 1,
         edition_base_id: 1,
+        language_id: 1,
         abbreviation: 'new abbreviation',
         name: 'new name'
       }));
@@ -174,8 +176,11 @@ describe('PUT /editions/?', ()=> {
       .request(app)
       .put('/editions/1')
       .send({
+        edition_id: 1,
         edition_base_id: 1,
-        abbreviation: 'ed2'
+        language_id: 1,
+        abbreviation: 'ed2',
+        name: 'enEdition1'
       }));
     err.should.have.status(403);
     err.response.text.should.be.eql('Key (abbreviation)=(ed2) already exists.')
@@ -185,5 +190,23 @@ describe('PUT /editions/?', ()=> {
     edition.edition_base_id.should.be.eql(1);
     edition.abbreviation.should.be.eql('ed1');
     edition.name.should.be.eql('enEdition1');
+  })
+
+  it('edition language不能重複', async() => {
+    const [err, res] = await to(chai
+      .request(app)
+      .put('/editions/1')
+      .send({
+        edition_id: 1,
+        edition_base_id: 1,
+        language_id: 2,
+        abbreviation: 'ed1',
+        name: 'enEdition1'
+      }));
+    err.should.have.status(403);
+    err.response.text.should.be.eql('Key (edition_base_id, language_id)=(1, 2) already exists.')
+
+    const [, edition] = await Edition.get(1);
+    edition.language_id.should.be.eql(1);
   })
 })

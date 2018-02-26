@@ -26,16 +26,20 @@ async function add(payload) {
 }
 
 async function get(edition_id) {
-  return await to(db.one('SELECT e.edition_id, e.name, eb.edition_base_id, eb.abbreviation, eb.icon FROM edition as e, edition_base as eb WHERE edition_id=$1 AND e.edition_base_id = eb.edition_base_id', edition_id));
+  return await to(db.one('SELECT e.edition_id, e.name, e.language_id, eb.edition_base_id, eb.abbreviation, eb.icon FROM edition as e, edition_base as eb WHERE edition_id=$1 AND e.edition_base_id = eb.edition_base_id', edition_id));
 }
 
 async function update(edition_id, payload) {
-  const { edition_base_id, name, abbreviation } = payload;
-  await to(db.query(
-    'UPDATE edition SET name=$1 WHERE edition_id = $2', [name, edition_id]
+  const { edition_base_id, name, abbreviation, language_id } = payload;
+  let [err, ] = await to(db.query(
+    'UPDATE edition SET name=${name}, language_id=${language_id} WHERE edition_id=${edition_id}', payload
   ));
+  console.log('eeee', err);
+  if(err) {
+    return [err];
+  }
 
-  const [err, ] = await to(db.query(
+  [err, ] = await to(db.query(
     'UPDATE edition_base SET abbreviation=$1 WHERE edition_base_id = $2', [abbreviation, edition_base_id]
   ));
 

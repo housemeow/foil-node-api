@@ -44,6 +44,10 @@ exports.up = (pgm) => {
     priority: {
       type: 'integer'
     },
+  }, {
+    constraints: {
+      unique: ['edition_base_id', 'language_id']
+    }
   })
 };
 
