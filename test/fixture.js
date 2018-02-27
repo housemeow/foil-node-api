@@ -1,4 +1,4 @@
-import { Language, Edition } from '../src/db_models';
+import { Language, Edition, EditionBase } from '../src/db_models';
 
 async function createLanguage() {
   await Language.add({
@@ -16,34 +16,41 @@ async function createLanguage() {
 }
 
 async function createEdition() {
+  let err, editionBase1, editionBase2, edition;
+  [err, editionBase1] = await EditionBase.add({
+    abbreviation: 'ed1'
+  });
   await Edition.add({
+    edition_base_id: editionBase1.edition_base_id,
     language_id: 1,
-    abbreviation: 'ed1',
     name: 'enEdition1',
   });
 
   await Edition.add({
+    edition_base_id: editionBase1.edition_base_id,
     language_id: 2,
-    abbreviation: 'ed1',
     name: 'twEdition1',
   });
   await Edition.add({
+    edition_base_id: editionBase1.edition_base_id,
     language_id: 3,
-    abbreviation: 'ed1',
     name: 'jpEdition1',
   });
 
 
-  await Edition.add({
-    language_id: 2,
+  [err, editionBase2] = await EditionBase.add({
     abbreviation: 'ed2',
+  })
+  await Edition.add({
+    edition_base_id: editionBase2.edition_base_id,
+    language_id: 2,
     name: 'twEdition2',
   });
 
-  const [err, edition ] =
+  [err, edition ] =
   await Edition.add({
+    edition_base_id: editionBase2.edition_base_id,
     language_id: 3,
-    abbreviation: 'ed2',
     name: 'jpEdition2',
   });
 }

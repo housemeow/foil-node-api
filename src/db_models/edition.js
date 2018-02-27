@@ -14,21 +14,12 @@ e.name FROM edition as e, edition_base as eb WHERE e.edition_base_id = eb.editio
 }
 
 async function add(payload) {
-  const { edition_base_id, abbreviation } = payload;
-
-  if(!edition_base_id) {
-    const [err, editionBase] = await EditionBase.add(payload);
-    if(editionBase) {
-      payload.edition_base_id = editionBase.edition_base_id;
-    } else if(err.code === UNIQUE_VIOLATION) {
-      const [err, editionBase] = await EditionBase.getByAbbreviation(abbreviation);
-      payload.edition_base_id = editionBase.edition_base_id;
-    } else {
-      return [{ ...err, statusCode: 403 }, editionBase];
-    }
-  }
-  return await to(db.one(
+  let [err, edition] = await to(db.one(
     'INSERT INTO edition(edition_base_id, language_id, name) VALUES(${edition_base_id}, ${language_id}, ${name}) RETURNING edition_id, edition_base_id', payload));
+  if(err) {
+    err = { ...err, statusCode: 403 };
+  }
+  return [err, edition];
 }
 
 async function get(edition_id) {

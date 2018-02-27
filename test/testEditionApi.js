@@ -1,6 +1,6 @@
 import to from 'await-to-js';
 import app from '../src/app.js';
-import { Language, Edition } from '../src/db_models';
+import { Language, Edition, EditionBase } from '../src/db_models';
 import { createLanguage, createEdition} from './fixture';
 import doMigrate from './migration';
 
@@ -10,9 +10,8 @@ let should = chai.should();
 chai.use(chaiHttp);
 
 describe('/GET editions', () => {
-  before(async ()=> {
+  beforeEach(async ()=> {
     await doMigrate();
-    await createLanguage();
   });
 
   it('一開始的edition應該是空的', done => {
@@ -66,18 +65,29 @@ describe('POST /editions', () => {
   });
 
   it('應該要能建立版本', async() => {
-    const [, res] =await to(chai
+    let [, res] =await to(chai
+      .request(app)
+      .post('/edition_bases')
+      .send({
+        abbreviation: 'ed1'
+      }));
+    res.should.have.status(200);
+    res.body.should.be.a('object');
+    res.body.edition_base_id.should.be.eql(1);
+
+    [, res] = await to(chai
       .request(app)
       .post('/editions')
       .send({
+        edition_base_id: res.body.edition_base_id,
         language_id: 1,
-        abbreviation: 'ed1',
         name: 'EN_ED1'
       }));
     res.should.have.status(200);
+    res.body.should.be.a('object');
+    res.body.edition_base_id.should.be.eql(1);
 
     const [err, edition] = await Edition.get(1);
-    console.log('err, edition', err, edition);
     edition.edition_id.should.be.eql(1);
     edition.edition_base_id.should.be.eql(1);
     edition.abbreviation.should.be.eql('ed1');
@@ -93,12 +103,17 @@ describe('GET /editions/?', () => {
   });
 
   it('應該要能抓到對應的edition', async() => {
-    let [, edition] = await Edition.add({
-      language_id: 1,
+    let edition_base1, edition_base2, edition, res;
+    [, edition_base1] = await EditionBase.add({
       abbreviation: 'ed1',
+    });
+
+    [, edition] = await Edition.add({
+      edition_base_id: edition_base1.edition_base_id,
+      language_id: 1,
       name: 'EN_ED1'
     });
-    let [, res] = await to(chai
+    [, res] = await to(chai
       .request(app)
       .get('/editions/1'));
     res.should.have.status(200);
@@ -109,8 +124,8 @@ describe('GET /editions/?', () => {
     res.body.name.should.be.eql('EN_ED1');
 
     [, edition] = await Edition.add({
+      edition_base_id: edition_base1.edition_base_id,
       language_id: 2,
-      abbreviation: 'ed1',
       name: 'TW_ED1'
     });
     [, res] = await to(chai
@@ -123,9 +138,13 @@ describe('GET /editions/?', () => {
     res.body.icon.should.be.eql('default.png');
     res.body.name.should.be.eql('TW_ED1');
 
-    [, edition] = await Edition.add({
-      language_id: 1,
+
+    [, edition_base2] = await EditionBase.add({
       abbreviation: 'ed2',
+    });
+    [, edition] = await Edition.add({
+      edition_base_id: edition_base2.edition_base_id,
+      language_id: 1,
       name: 'EN_ED2'
     });
     [, res] = await to(chai
