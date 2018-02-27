@@ -6,22 +6,31 @@ async function list() {
 }
 
 async function add(payload) {
-  return await to(db.one('INSERT INTO language(abbreviation, description) VALUES(${abbreviation}, ${description}) RETURNING language_id', payload));
+  let [err, language] = await to(db.one('INSERT INTO language(abbreviation, description) VALUES(${abbreviation}, ${description}) RETURNING language_id', payload));
+  if(err) {
+    err = { ...err, statusCode: 403 };
+  }
+  return [err, language];
 }
 
 async function get(language_id) {
-  return await to(db.one('SELECT * FROM language WHERE language_id=$1', language_id));
+  let [err, language] = await to(db.one('SELECT * FROM language WHERE language_id=$1', language_id));
+  if(err) {
+    err = { ...err, statusCode: 403 };
+  }
+  return [err, language];
 }
 
 async function update(language_id, payload) {
-  const [err] = await to(db.query(
+  let [err] = await to(db.query(
     "\
     UPDATE language SET\
       abbreviation=${abbreviation},\
       description=${description}\
     WHERE language_id=${language_id}", { ...payload, language_id }));
+
   if(err) {
-    return [err]
+    return [{ ...err, statusCode: 403 }]
   }
   return await get(language_id);
 }

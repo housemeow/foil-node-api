@@ -24,7 +24,7 @@ async function add(payload) {
       const [err, editionBase] = await EditionBase.getByAbbreviation(abbreviation);
       payload.edition_base_id = editionBase.edition_base_id;
     } else {
-      return [err, editionBase];
+      return [{ ...err, statusCode: 403 }, editionBase];
     }
   }
   return await to(db.one(
@@ -32,17 +32,20 @@ async function add(payload) {
 }
 
 async function get(edition_id) {
-  return await to(db.one('SELECT e.edition_id, e.name, e.language_id, eb.edition_base_id, eb.abbreviation, eb.icon FROM edition as e, edition_base as eb WHERE edition_id=$1 AND e.edition_base_id = eb.edition_base_id', edition_id));
+  let [err, edition] = await to(db.one('SELECT e.edition_id, e.name, e.language_id, eb.edition_base_id, eb.abbreviation, eb.icon FROM edition as e, edition_base as eb WHERE edition_id=$1 AND e.edition_base_id = eb.edition_base_id', edition_id));
+  if(err) {
+    err = { ...err, statusCode: 403 };
+  }
+  return [err, edition];
 }
 
 async function update(edition_id, payload) {
   const { edition_base_id, name, abbreviation, language_id } = payload;
-  let [err, ] = await to(db.query(
+  let [err, edition] = await to(db.query(
     'UPDATE edition SET name=${name}, language_id=${language_id} WHERE edition_id=${edition_id}', payload
   ));
-  console.log('eeee', err);
   if(err) {
-    return [err];
+    return [{ ...err, statusCode: 403 }];
   }
 
   [err, ] = await to(db.query(
@@ -50,10 +53,10 @@ async function update(edition_id, payload) {
   ));
 
   if(err && err.code === UNIQUE_VIOLATION) {
-    return [err];
+    return [{ ...err, statusCode: 403 }];
   }
 
-  return get(edition_id);
+  return await get(edition_id);
 }
 
 export default {
